@@ -20,7 +20,9 @@ class App:
         for i in range(self.grille.l):
             for j in range(self.grille.h):
                 case = self.grille.get_case(i, j)
-                if case.terrain == TERRAIN.PILLIER:
+                if case.bomber:
+                    pyxel.rect(40*i, 40*j, 40, 40, 1)
+                elif case.terrain == TERRAIN.PILLIER:
                     pyxel.rect(40*i, 40*j, 40, 40, 0)
                 elif case.terrain == TERRAIN.BRIQUE:
                     pyxel.rect(40*i, 40*j, 40, 40, 13)

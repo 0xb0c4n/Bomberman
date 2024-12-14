@@ -1,21 +1,30 @@
 from utils import *
 
-import random
-
 class TERRAIN:
     LISTE = (0,1,2)
     VIDE = 0
     BRIQUE = 1
     PILLIER = 2
 
+    PROBAS = {
+        VIDE: 0.14,
+        BRIQUE: 0.86
+    }
+
+class Bomber:
+    def __init__(self, x, y, nom, grille):
+        self.x = x
+        self.y = y
+        self.nom = nom
+        self.dead = False
+        self.grille = grille
+
 class Case:
-    def __init__(self, x, y, terrain):
+    def __init__(self, x, y, terrain, bomber=False):
         self.x = x
         self.y = y
         self.terrain = terrain
-    
-    def __str__(self):
-        return str(self.terrain)
+        self.bomber = bomber
 
 class Grille:
     def __init__(self, l, h):
@@ -28,12 +37,15 @@ class Grille:
         for i in range(self.h):
             ligne = []
             for j in range(self.l):
-                if (i == 0 or i == self.l-1) and (j == 0 or j == self.h-1):
-                    ligne.append(Case(i,j,TERRAIN.VIDE))
+                if (i == 0 and j == 0) or (i == self.l - 1 and j == self.h - 1):
+                    ligne.append(Case(i,j,TERRAIN.VIDE, True))
                 elif not(est_pair(i)) and not(est_pair(j)):
                     ligne.append(Case(i, j, TERRAIN.PILLIER))
+                elif (i in [0, 1, self.l - 2, self.l - 1]) and (j in [0, 1, self.h - 2, self.h - 1]):
+                    ligne.append(Case(i,j,TERRAIN.VIDE))
                 else:
-                    ligne.append(Case(i,j,random.choice((TERRAIN.BRIQUE, TERRAIN.VIDE))))
+                    terrain = probas(TERRAIN.PROBAS)
+                    ligne.append(Case(i,j,terrain))
 
             self.cases.append(ligne)
 
