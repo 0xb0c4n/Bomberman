@@ -1,5 +1,6 @@
+from utils import *
+
 import random
-import utils
 
 class TERRAIN:
     LISTE = (0,1,2)
@@ -12,6 +13,9 @@ class Case:
         self.x = x
         self.y = y
         self.terrain = terrain
+    
+    def __str__(self):
+        return str(self.terrain)
 
 class Grille:
     def __init__(self, l, h):
@@ -20,23 +24,22 @@ class Grille:
         self.cases = []
         self.exploding_bombs = []
 
-    def genere(self):
-        for i in range(self.l):
-            for j in range(self.h):
-                if i == 0 and j == 0:
-                    self.cases.append(Case(i,j,0))
-                elif utils.est_pair(i) and utils.est_pair(j):
-                    pass
+    def position_init(self):
+        for i in range(self.h):
+            ligne = []
+            for j in range(self.l):
+                if (i == 0 or i == self.l-1) and (j == 0 or j == self.h-1):
+                    ligne.append(Case(i,j,TERRAIN.VIDE))
+                elif not(est_pair(i)) and not(est_pair(j)):
+                    ligne.append(Case(i, j, TERRAIN.PILLIER))
                 else:
-                    self.cases.append(Case(i, j, 2))
+                    ligne.append(Case(i,j,random.choice((TERRAIN.BRIQUE, TERRAIN.VIDE))))
 
-    def get(self, x, y):
+            self.cases.append(ligne)
+
+    def get_case(self, x, y):
         return self.cases[x][y]
-
-class Bomber:
-    def __init__(self):
-        pass
-
+    
 class Bomb:
     def __init__(self):
         pass

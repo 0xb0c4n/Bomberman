@@ -1,2 +1,2 @@
-def est_pair(self, i):
+def est_pair(i):
     return i % 2 == 0
