@@ -12,19 +12,26 @@ class TERRAIN:
     }
 
 class Bomber:
-    def __init__(self, x, y, nom, grille):
+    def __init__(self, x, y, nom, grille, id):
         self.x = x
         self.y = y
         self.nom = nom
         self.dead = False
         self.grille = grille
+        self.id = id
+    
+    def spawn(self):
+        case = self.grille.get_case(self.x, self.y)
+        case.bomber = self
 
 class Case:
-    def __init__(self, x, y, terrain, bomber=False):
+    def __init__(self, x, y, terrain):
         self.x = x
         self.y = y
         self.terrain = terrain
-        self.bomber = bomber
+        self.bomber = None
+        self.bomb = None
+        self.en_explosion = False
 
 class Grille:
     def __init__(self, l, h):
@@ -38,7 +45,7 @@ class Grille:
             ligne = []
             for j in range(self.l):
                 if (i == 0 and j == 0) or (i == self.l - 1 and j == self.h - 1):
-                    ligne.append(Case(i,j,TERRAIN.VIDE, True))
+                    ligne.append(Case(i,j,TERRAIN.VIDE))
                 elif not(est_pair(i)) and not(est_pair(j)):
                     ligne.append(Case(i, j, TERRAIN.PILLIER))
                 elif (i in [0, 1, self.l - 2, self.l - 1]) and (j in [0, 1, self.h - 2, self.h - 1]):
