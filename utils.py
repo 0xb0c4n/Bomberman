@@ -1,6 +1,18 @@
 import random
 
-def est_pair(i: int):
+#Classes
+
+class DB:
+    KEYS = {
+        ("KEY_Z", "KEY_UP"): "up",
+        ("KEY_S", "KEY_DOWN"): "down",
+        ("KEY_Q", "KEY_LEFT"): "left",
+        ("KEY_D", "KEY_RIGHT"): "right"
+    }
+
+#Utils
+
+def est_pair(i: int) -> bool:
     return i % 2 == 0
 
 def probas(liste: dict):
