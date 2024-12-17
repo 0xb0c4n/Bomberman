@@ -50,6 +50,9 @@ class Bomber:
             self.x = new_x
             self.y = new_y
 
+    def dropBomb(self):
+        self.grille.cases[self.x][self.y].bomb = Bomb(self.x, self.y)
+
 class Case:
     def __init__(self, x, y, terrain):
         self.x = x
@@ -86,5 +89,13 @@ class Grille:
         return self.cases[x][y]
     
 class Bomb:
-    def __init__(self):
-        pass
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.portee = 2
+        self.rebours = 5
+    
+    def compte_a_rebours(self, n):
+        self.rebours -= n
+            
+        
