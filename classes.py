@@ -1,4 +1,5 @@
 from utils import *
+import pyxel
 
 class PARAMS:
     LISTE = (0,1,2)
@@ -86,8 +87,80 @@ class Grille:
             self.cases.append(ligne)
 
     def get_case(self, x, y):
-        return self.cases[x][y]
+        if not(self.l <= x or self.h <= y) and not(self.l < 0 or self.h < 0):
+            return self.cases[x][y]
     
+    def manage_bombs(self):
+        def decrementer():
+            for i in range(self.l):
+                for j in range(self.h):
+                    case = self.get_case(i, j)
+
+                    if case.bomb != None:
+                        if pyxel.frame_count % 30 == 0:
+                            case.bomb.compte_a_rebours(1)
+                        if case.bomb.rebours == 0:
+                            self.exploding_bombs.append(case.bomb)
+                            case.bomb = None
+        
+        def exploser():
+            for elt in self.exploding_bombs:
+                portee = elt.portee
+                for i_x in range(-portee,1):
+                    case_x = self.get_case(elt.x-i_x, elt.y)
+                    if case_x != None and case_x.terrain != PARAMS.PILLIER:
+                        case_x.en_explosion = True
+                    elif case_x != None and case_x.terrain == PARAMS.BRIQUE:
+                        case_x.en_explosion = True
+                        i_x = portee 
+                    else:
+                        break
+                for j_x in range(1, portee+1):
+                    case_x = self.get_case(elt.x+i_x, elt.y)
+                    if case_x != None and case_x.terrain != PARAMS.PILLIER:
+                        case_x.en_explosion = True
+                    elif case_x != None and case_x.terrain == PARAMS.BRIQUE:
+                        case_x.en_explosion = True
+                        j_x = portee 
+                    else:
+                        break
+                for i_y in range(-portee,1):
+                    case_y = self.get_case(elt.x, elt.y-i_y)
+                    if case_y != None and case_y.terrain != PARAMS.PILLIER:
+                        case_y.en_explosion = True
+                    elif case_y != None and case_x.terrain == PARAMS.BRIQUE:
+                        case_x.en_explosion = True
+                        i_y = portee 
+                    else:
+                        break
+                for j_y in range(1, portee+1):
+                    case_y = self.get_case(elt.x, elt.y+j_y)
+                    if case_y != None and case_y.terrain != PARAMS.PILLIER:
+                        case_y.en_explosion = True
+                    elif case_y != None and case_x.terrain == PARAMS.BRIQUE:
+                        case_x.en_explosion = True
+                        j_y = portee 
+                    else:
+                        break
+
+        def change_terrain():
+            for i in range(self.l):
+                for j in range(self.h):
+                    case = self.get_case(i,j)
+
+                    if case.en_explosion:
+                        case.en_explosion = False
+                        self.exploding_bombs = self.exploding_bombs[:-1]
+                        if case.terrain == PARAMS.BRIQUE:
+                            case.terrain = PARAMS.VIDE
+                        elif case.bomber != []:
+                            for player in case.bomber:
+                                player.dead = True
+
+        decrementer()
+        exploser()
+        change_terrain()
+
 class Bomb:
     def __init__(self, x, y):
         self.x = x
@@ -97,5 +170,4 @@ class Bomb:
     
     def compte_a_rebours(self, n):
         self.rebours -= n
-            
         

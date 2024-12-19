@@ -35,16 +35,6 @@ class App:
         elif pyxel.btnp(pyxel.KEY_J):
             self.player2.dropBomb()
 
-    def decrementer(self):
-        for i in range(self.grille.l):
-            for j in range(self.grille.h):
-                case = self.grille.get_case(i, j)
-
-                if case.bomb != None:
-                    case.bomb.compte_a_rebours(pyxel.frame_count // 30)
-                    print(case.bomb.rebours)
-                    if case.bomb.rebours == 0:
-                        case.bomb = None
 
     def update(self):
         #Quit window
@@ -53,7 +43,8 @@ class App:
         
         self.deplacement()
         self.bombarder()
-        self.decrementer()
+
+        self.grille.manage_bombs()
 
     def draw(self):
         pyxel.cls(7)
@@ -64,16 +55,15 @@ class App:
                 if case.bomb != None:
                     pyxel.rect(40*i, 40*j, 40,40 , 3)
 
-                if case.bomber != []:
-                    for _ in case.bomber:
-                        pyxel.rect(40*i, 40*j, 40, 40, _.id)
-                elif case.terrain == PARAMS.PILLIER:
+                if case.terrain == PARAMS.PILLIER:
                     pyxel.rect(40*i, 40*j, 40, 40, 0)
                 elif case.terrain == PARAMS.BRIQUE:
                     pyxel.rect(40*i, 40*j, 40, 40, 13)
-                
-
-                
-
+                elif case.en_explosion:
+                    pyxel.rect(40*i, 40*j, 40,40 , 5)
+                elif case.bomber != []:
+                    for player in case.bomber:
+                        if not(player.dead):
+                            pyxel.rect(40*i, 40*j, 40, 40, player.id)
 
 App()
