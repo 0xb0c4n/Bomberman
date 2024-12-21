@@ -104,44 +104,23 @@ class Grille:
                             case.bomb = None
         
         def exploser():
+            def handle_direction(dx, dy):
+                for step in range(1, portee + 1):
+                    case = self.get_case(elt.x + step * dx, elt.y + step * dy)
+                    if case is None:
+                        break
+                    if case.terrain == PARAMS.PILLIER:
+                        break
+                    case.en_explosion = True
+                    if case.terrain == PARAMS.BRIQUE:
+                        break
+
             for elt in self.exploding_bombs:
                 portee = elt.portee
-                for i_x in range(-portee,1):
-                    case_x = self.get_case(elt.x-i_x, elt.y)
-                    if case_x != None and case_x.terrain != PARAMS.PILLIER:
-                        case_x.en_explosion = True
-                    elif case_x != None and case_x.terrain == PARAMS.BRIQUE:
-                        case_x.en_explosion = True
-                        i_x = portee 
-                    else:
-                        break
-                for j_x in range(1, portee+1):
-                    case_x = self.get_case(elt.x+i_x, elt.y)
-                    if case_x != None and case_x.terrain != PARAMS.PILLIER:
-                        case_x.en_explosion = True
-                    elif case_x != None and case_x.terrain == PARAMS.BRIQUE:
-                        case_x.en_explosion = True
-                        j_x = portee 
-                    else:
-                        break
-                for i_y in range(-portee,1):
-                    case_y = self.get_case(elt.x, elt.y-i_y)
-                    if case_y != None and case_y.terrain != PARAMS.PILLIER:
-                        case_y.en_explosion = True
-                    elif case_y != None and case_x.terrain == PARAMS.BRIQUE:
-                        case_x.en_explosion = True
-                        i_y = portee 
-                    else:
-                        break
-                for j_y in range(1, portee+1):
-                    case_y = self.get_case(elt.x, elt.y+j_y)
-                    if case_y != None and case_y.terrain != PARAMS.PILLIER:
-                        case_y.en_explosion = True
-                    elif case_y != None and case_x.terrain == PARAMS.BRIQUE:
-                        case_x.en_explosion = True
-                        j_y = portee 
-                    else:
-                        break
+                handle_direction(-1, 0)  
+                handle_direction(1, 0)  
+                handle_direction(0, -1) 
+                handle_direction(0, 1)   
 
         def change_terrain():
             for i in range(self.l):
@@ -156,6 +135,8 @@ class Grille:
                         elif case.bomber != []:
                             for player in case.bomber:
                                 player.dead = True
+                        elif case.bomb != None:
+                            self.exploding_bombs.append(case.bomb)
 
         decrementer()
         exploser()
