@@ -2,7 +2,7 @@ import pyxel
 
 class Menu:
     def __init__(self):
-        self.show = True
+        self.show = False
         self.mode = None
         self.i = 0
         self.dico = {
@@ -23,8 +23,16 @@ class Menu:
     def draw(self):
         pyxel.cls(0)
         pyxel.text(65,20,"Bomberman by 0xb0c4n", pyxel.frame_count % 12)
-        pyxel.text(80,40,"1v1", 7)
+        pyxel.text(80,40,"Play", 7)
         pyxel.text(80,60,"Options", 7)
         pyxel.text(80,80,"Quit", 7)
-
         pyxel.tri(70,39+20*self.i,75,42+20*self.i,70,45+20*self.i,7)
+
+class MenuWin:
+    def __init__(self, win_player=""):
+        self.show = False
+        self.win_player = win_player
+
+    def draw(self):
+        pyxel.cls(0)
+        pyxel.text(65,20,self.win_player + " wins !", pyxel.frame_count % 12)

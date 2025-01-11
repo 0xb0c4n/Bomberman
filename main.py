@@ -7,6 +7,7 @@ import pyxel
 class App:
     def __init__(self):
         self.menu = Menu()
+        self.menuwin = MenuWin()
 
         self.grille = Grille(13,13)
         self.grille.position_init()
@@ -25,15 +26,15 @@ class App:
     def deplacement(self):
         for k in pyxel.__dict__.keys():
             if k.startswith('KEY_'):
-                if pyxel.btnp(getattr(pyxel, k)):
+                if pyxel.btn(getattr(pyxel, k)):
                    for elt in DB.KEYS:
                        if k in elt:
                         player = elt.index(k)
                         direction = DB.KEYS[elt]
                         if player == 0:
-                            self.player1.goto(direction)
+                            self.player1.goto_fluid(direction)
                         else:
-                            self.player2.goto(direction)
+                            self.player2.goto_fluid(direction)
 
     def bombarder(self):
         if pyxel.btnp(pyxel.KEY_E):
@@ -65,9 +66,9 @@ class App:
 
 
                 if case.terrain == PARAMS.PILLIER:
-                    pyxel.blt(16*i, 16*j, 0, 48, 48, 16, 16, 0)
+                    pyxel.rect(16*i, 16*j, 16, 16, 0)
                 elif case.terrain == PARAMS.BRIQUE:
-                    pyxel.blt(16*i, 16*j, 0, 64,48, 16, 16, 13)
+                    pyxel.rect(16*i, 16*j, 16, 16, 13)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_ESCAPE):
@@ -82,6 +83,8 @@ class App:
         if self.menu.show:
             self.menu.update()
             self.menu.draw()
+        elif self.menuwin.show:
+            self.menuwin.draw()
         else:
             if self.menu.mode == "quit":
                 pyxel.quit()

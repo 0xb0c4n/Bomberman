@@ -23,6 +23,8 @@ class Bomber:
     def __init__(self, x, y, nom, grille, id):
         self.x = x
         self.y = y
+        self.move_x = x
+        self.move_y = y
         self.nom = nom
         self.dead = False
         self.grille = grille
@@ -31,17 +33,37 @@ class Bomber:
     def spawn(self):
         case = self.grille.get_case(self.x, self.y)
         case.bomber.append(self)
+
+    def goto_fluid(self, direction):
+        move_cpl = PARAMS.COEFS_GO[direction]
+
+        n_case_x = self.x+move_cpl[0]
+        n_case_y = self.y+move_cpl[1]
+        
+        if self.grille.cases[n_case_x][n_case_y].terrain == 0:
+            print(n_case_x)
+            coef_add = 16/20
+            self.move_x += coef_add * move_cpl[0]
+            self.move_y += coef_add * move_cpl[1]
+
+            if self.move_x % 16 == 0:
+                next_case = self.grille.cases[n_case_x][n_case_y]
+                current_case = self.grille.cases[self.x][self.y]
+
+                current_case.bomber.pop()
+                next_case.bomber.append(self)
+                
+                self.x += n_case_x
+                self.y += n_case_y
     
+
+
     def goto(self, direction):
         move_cpl = PARAMS.COEFS_GO[direction]
         new_x = self.x+move_cpl[0]
         new_y = self.y+move_cpl[1]
 
-        if new_x < 0 or new_y < 0 or new_x >= self.grille.l or new_y >= self.grille.h:
-            pass
-        elif self.grille.cases[new_x][new_y].terrain != 0:
-            pass
-        else:
+        if not(new_x < 0 or new_y < 0 or new_x >= self.grille.l or new_y >= self.grille.h) and not(self.grille.cases[new_x][new_y].terrain != 0):
             next_case = self.grille.cases[new_x][new_y]
             current_case = self.grille.cases[self.x][self.y]
 
@@ -50,7 +72,6 @@ class Bomber:
             
             self.x = new_x
             self.y = new_y
-
     def dropBomb(self):
         self.grille.cases[self.x][self.y].bomb = Bomb(self.x, self.y)
 
@@ -88,7 +109,7 @@ class Grille:
             self.cases.append(ligne)
 
     def get_case(self, x, y):
-        if not(self.l <= x or self.h <= y) and not(self.l < 0 or self.h < 0):
+        if not(self.l <= x or self.h <= y) and not(x < 0 or y < 0):
             return self.cases[x][y]
     
     def manage_bombs(self):
