@@ -69,6 +69,7 @@ class Grille:
         self.h = h
         self.cases = []
         self.exploding_bombs = []
+        self.animations = []
 
     def position_init(self):
         for i in range(self.h):
@@ -97,10 +98,11 @@ class Grille:
                     case = self.get_case(i, j)
 
                     if case.bomb != None:
-                        if pyxel.frame_count % 30 == 0:
+                        if pyxel.frame_count % 24 == 0:
                             case.bomb.compte_a_rebours(1)
                         if case.bomb.rebours == 0:
                             self.exploding_bombs.append(case.bomb)
+
                             case.bomb = None
         
         def exploser():
@@ -113,6 +115,7 @@ class Grille:
                         break
                     case.en_explosion = True
                     if case.terrain == PARAMS.BRIQUE:
+                        self.animations.append(case)
                         break
 
             for elt in self.exploding_bombs:
@@ -127,12 +130,10 @@ class Grille:
                 for j in range(self.h):
                     case = self.get_case(i,j)
 
-                    if case.en_explosion:
+                    if case.en_explosion and case.terrain != PARAMS.BRIQUE:
                         case.en_explosion = False
                         self.exploding_bombs = self.exploding_bombs[:-1]
-                        if case.terrain == PARAMS.BRIQUE:
-                            case.terrain = PARAMS.VIDE
-                        elif case.bomber != []:
+                        if case.bomber != []:
                             for player in case.bomber:
                                 player.dead = True
                         elif case.bomb != None:
