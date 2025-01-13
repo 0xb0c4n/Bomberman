@@ -34,30 +34,6 @@ class Bomber:
         case = self.grille.get_case(self.x, self.y)
         case.bomber.append(self)
 
-    def goto_fluid(self, direction):
-        move_cpl = PARAMS.COEFS_GO[direction]
-
-        n_case_x = self.x+move_cpl[0]
-        n_case_y = self.y+move_cpl[1]
-        
-        if self.grille.cases[n_case_x][n_case_y].terrain == 0:
-            print(n_case_x)
-            coef_add = 16/20
-            self.move_x += coef_add * move_cpl[0]
-            self.move_y += coef_add * move_cpl[1]
-
-            if self.move_x % 16 == 0:
-                next_case = self.grille.cases[n_case_x][n_case_y]
-                current_case = self.grille.cases[self.x][self.y]
-
-                current_case.bomber.pop()
-                next_case.bomber.append(self)
-                
-                self.x += n_case_x
-                self.y += n_case_y
-    
-
-
     def goto(self, direction):
         move_cpl = PARAMS.COEFS_GO[direction]
         new_x = self.x+move_cpl[0]

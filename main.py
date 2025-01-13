@@ -24,15 +24,15 @@ class App:
     def deplacement(self):
         for k in pyxel.__dict__.keys():
             if k.startswith('KEY_'):
-                if pyxel.btn(getattr(pyxel, k)):
+                if pyxel.btnp(getattr(pyxel, k)):
                    for elt in DB.KEYS:
                        if k in elt:
                         player = elt.index(k)
                         direction = DB.KEYS[elt]
                         if player == 0:
-                            self.player1.goto_fluid(direction)
+                            self.player1.goto(direction)
                         else:
-                            self.player2.goto_fluid(direction)
+                            self.player2.goto(direction)
 
     def bombarder(self):
         if pyxel.btnp(pyxel.KEY_E):
