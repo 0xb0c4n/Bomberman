@@ -20,7 +20,7 @@ class PARAMS:
     }
 
 class Bomber:
-    def __init__(self, x, y, nom, grille, id):
+    def __init__(self, x, y, nom, grille, id, direction):
         self.x = x
         self.y = y
         self.move_x = x
@@ -29,6 +29,7 @@ class Bomber:
         self.dead = False
         self.grille = grille
         self.id = id
+        self.direction = direction
     
     def spawn(self):
         case = self.grille.get_case(self.x, self.y)
@@ -48,6 +49,7 @@ class Bomber:
             
             self.x = new_x
             self.y = new_y
+
     def dropBomb(self):
         self.grille.cases[self.x][self.y].bomb = Bomb(self.x, self.y)
 
@@ -67,6 +69,7 @@ class Grille:
         self.cases = []
         self.exploding_bombs = []
         self.animations = []
+        self.end = False
 
     def position_init(self):
         for i in range(self.h):
@@ -120,7 +123,8 @@ class Grille:
                 handle_direction(-1, 0)  
                 handle_direction(1, 0)  
                 handle_direction(0, -1) 
-                handle_direction(0, 1)   
+                handle_direction(0, 1)  
+                handle_direction(0, 0) 
 
         def change_terrain():
             for i in range(self.l):
@@ -133,6 +137,7 @@ class Grille:
                         if case.bomber != []:
                             for player in case.bomber:
                                 player.dead = True
+                                self.animations.clear()
                         elif case.bomb != None:
                             self.exploding_bombs.append(case.bomb)
 

@@ -7,14 +7,13 @@ import pyxel
 class App:
     def __init__(self):
         self.menu = Menu()
-        self.menuwin = MenuWin()
 
         self.grille = Grille(13,13)
         self.grille.position_init()
 
-        self.player1 = Bomber(0,0,"player1",self.grille,1)
+        self.player1 = Bomber(0,0,"player1",self.grille,1, "right")
         self.player1.spawn()
-        self.player2 = Bomber(12,12,"player2",self.grille,2)
+        self.player2 = Bomber(12,12,"player2",self.grille,2, "left")
         self.player2.spawn()
 
         self.anim_counter = 0
@@ -33,8 +32,11 @@ class App:
                         direction = DB.KEYS[elt]
                         if player == 0:
                             self.player1.goto(direction)
+                            self.player1.direction = direction
                         else:
                             self.player2.goto(direction)
+                            self.player2.direction = direction
+
 
     def bombarder(self):
         if pyxel.btnp(pyxel.KEY_E):
@@ -52,9 +54,11 @@ class App:
                 if case.bomber != []:
                     for player in case.bomber:
                         if not(player.dead):
-                            pyxel.rect(16*i, 16*j, 16, 16, player.id)
+                            u, v = DB.SPRITES[player.direction]
+                            pyxel.blt(16*i, 16*j, 0, u, v, 16, 16)
                         else:
                             pyxel.cls(0)
+                            self.grille.end = True
                             alive_player = self.player1.nom if self.player2.dead else self.player2.nom
                             pyxel.text(80,50,alive_player + " wins !",7)
                             pyxel.text(60,70,"Press [ENTER] to restart",7)
@@ -62,13 +66,15 @@ class App:
                                 self.menu.show = True
                                 self.player1.dead = False
                                 self.player2.dead = False
+                                self.grille.end = False
+                                self.grille.position_init()
 
 
 
-                if case.terrain == PARAMS.PILLIER:
-                    pyxel.rect(16*i, 16*j, 16, 16, 0)
-                elif case.terrain == PARAMS.BRIQUE:
-                    pyxel.rect(16*i, 16*j, 16, 16, 13)
+                if case.terrain == PARAMS.PILLIER and not self.grille.end:
+                    pyxel.blt(16*i, 16*j, 0, 48,48,  16, 16)
+                elif case.terrain == PARAMS.BRIQUE and not self.grille.end:
+                    pyxel.blt(16*i, 16*j, 0, 64, 48, 16, 16)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_ESCAPE):
@@ -83,8 +89,6 @@ class App:
         if self.menu.show:
             self.menu.update()
             self.menu.draw()
-        elif self.menuwin.show:
-            self.menuwin.draw()
         else:
             if self.menu.mode == "quit":
                 pyxel.quit()
@@ -92,7 +96,7 @@ class App:
                 pyxel.cls(0)
                 self.draw_grille()
                 
-                duree_animation = 24
+                duree_animation = 92
             
                 for elt in self.grille.animations:
                     frame_progress = pyxel.frame_count % duree_animation

@@ -27,12 +27,3 @@ class Menu:
         pyxel.text(80,60,"Options", 7)
         pyxel.text(80,80,"Quit", 7)
         pyxel.tri(70,39+20*self.i,75,42+20*self.i,70,45+20*self.i,7)
-
-class MenuWin:
-    def __init__(self, win_player=""):
-        self.show = False
-        self.win_player = win_player
-
-    def draw(self):
-        pyxel.cls(0)
-        pyxel.text(65,20,self.win_player + " wins !", pyxel.frame_count % 12)

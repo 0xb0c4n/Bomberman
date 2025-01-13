@@ -9,7 +9,20 @@ class DB:
         ("KEY_Q", "KEY_LEFT"): "left",
         ("KEY_D", "KEY_RIGHT"): "right"
     }
-    anim_counter = 0
+
+    SPRITES = {
+        "up": (48,16),
+        "down": (48,0),
+        "left": (0,0),
+        "right": (0,16),
+        "explosions": {
+            0: (0,64),
+            1: (64,64),
+            2: (0,144),
+            3: (64,144)
+        }
+    }
+
 
 #Utils
 
