@@ -1,5 +1,4 @@
 import random
-import math
 
 #Classes
 
@@ -10,13 +9,9 @@ class DB:
         ("KEY_Q", "KEY_LEFT"): "left",
         ("KEY_D", "KEY_RIGHT"): "right"
     }
+    anim_counter = 0
 
 #Utils
-
-def manhattan(p1: tuple, p2: tuple) -> int:
-    """Revoie un entier correspondant à la distance calculée
-    Calcule la distance de Manhattan en prenant deux points (tuples)"""
-    return abs(p2[0] - p1[0]) + abs(p2[1]-p1[1])
 
 def est_pair(i: int) -> bool:
     """Renvoie un booléen correspondant à la parité d'un entier i
