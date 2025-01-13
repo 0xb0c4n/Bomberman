@@ -69,6 +69,8 @@ class Grille:
         self.cases = []
         self.exploding_bombs = []
         self.animations = []
+        self.explosions_anim = []
+
         self.end = False
 
     def position_init(self):
@@ -102,7 +104,7 @@ class Grille:
                             case.bomb.compte_a_rebours(1)
                         if case.bomb.rebours == 0:
                             self.exploding_bombs.append(case.bomb)
-
+                            self.explosions_anim.append(case.bomb)
                             case.bomb = None
         
         def exploser():

@@ -50,7 +50,6 @@ class App:
                 case = self.grille.get_case(i, j)
                 if case.bomb != None:
                     pyxel.blt(16*i, 16*j, 0, 0, 48,16,16)
-                    
                 if case.bomber != []:
                     for player in case.bomber:
                         if not(player.dead):
@@ -75,6 +74,8 @@ class App:
                     pyxel.blt(16*i, 16*j, 0, 48,48,  16, 16)
                 elif case.terrain == PARAMS.BRIQUE and not self.grille.end:
                     pyxel.blt(16*i, 16*j, 0, 64, 48, 16, 16)
+                
+
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_ESCAPE):
@@ -85,6 +86,27 @@ class App:
 
         self.grille.manage_bombs()
 
+    def calcul_portee(self, core: tuple, portee):
+        x, y = core
+
+        def handle_direction(dx, dy):
+            for step in range(1, portee + 1):
+                case = self.grille.get_case(x + step * dx, y + step * dy)
+                if case is None: 
+                    break
+                if case.terrain == PARAMS.PILLIER:
+                    break
+                case.en_explosion = True
+                if case.terrain == PARAMS.BRIQUE:
+                    break
+
+        handle_direction(-1, 0)  
+        handle_direction(1, 0)  
+        handle_direction(0, -1) 
+        handle_direction(0, 1)  
+        handle_direction(0, 0)
+
+
     def draw(self):
         if self.menu.show:
             self.menu.update()
@@ -94,28 +116,15 @@ class App:
                 pyxel.quit()
             else:
                 pyxel.cls(0)
-                self.draw_grille()
-                
-                duree_animation = 92
-            
-                for elt in self.grille.animations:
-                    frame_progress = pyxel.frame_count % duree_animation
-                    if frame_progress < duree_animation:
-                        frame_offset = (frame_progress // (duree_animation // 6)) * 16
-                        pyxel.blt(
-                            16 * elt.x, 
-                            16 * elt.y, 
-                            0, 
-                            80 + frame_offset, 
-                            48, 
-                            16, 
-                            16
-                        )
 
-                if pyxel.frame_count % duree_animation == 0 and len(self.grille.animations) > 0:
-                    for elt in self.grille.animations:
-                        elt.terrain = PARAMS.VIDE
-                        elt.en_explosion = False
-                    self.grille.animations.clear()
+                for bomb in self.grille.explosions_anim:
+                    duree = 12
+                    c_x, c_y = DB.SPRITES["explosions"][(pyxel.frame_count // duree) % 4]
+                    x, y = bomb.x - 2, bomb.y - 2
+                    pyxel.blt(x*16, y*16, 0, c_x, c_y, 80,80)
+                    
+
+
+                self.draw_grille()
 
 App()
