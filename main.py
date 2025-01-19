@@ -114,19 +114,21 @@ class App:
     
     def _change_limits(self, direction: str):
         #Un peu de doc ne fait jamais de mal, surtout pour des fonctions comme celles-ci
-        facteurs_x = ("droite", "gauche")
+        facteurs_x = ("gauche", "droite")
         facteurs_y = ("haut", "bas")
         if direction == facteurs_x[0] and self.limites[direction][0] > self.x:
             self.cx += 16
             self.sx -= 16
             self.x += 1
-        elif direction == facteurs_x[1] and self.limites[direction][0] <= self.x + 5:
-            self.sx -= 16
+        elif direction == facteurs_x[1] and self.limites[direction][0] != self.grille.l - 1 and self.limites[direction][0] <= self.x + 5:
+            self.sx -= 16 
         elif direction == facteurs_y[0] and self.limites[direction][1] > self.y:
             self.cy += 16
             self.sy -= 16
             self.y += 1
-        elif direction == facteurs_y[1] and self.limites[direction][1] <= self.y + 5:
+        elif direction == facteurs_y[1] and self.limites[direction][0] != self.grille.h - 1 and self.limites[direction][1] <= self.y + 5:
+            print(self.limites[direction][0] )
+            print(self.x + 5)
             self.sy -= 16
 
     def draw(self):
