@@ -16,7 +16,6 @@ class App:
         self.player2 = Bomber(12,12,"player2",self.grille,2, "left")
         self.player2.spawn()
 
-        self.anim_counter = 0
 
         pyxel.init(208, 208, title="Bomberman", fps=24, display_scale=3)
         pyxel.load("ressources.pyxres")
@@ -44,6 +43,18 @@ class App:
         elif pyxel.btnp(pyxel.KEY_J):
             self.player2.dropBomb()
 
+
+    def reset(self):
+        self.menu.show = True
+        self.grille = Grille(13,13)
+        self.grille.position_init()
+
+        self.player1 = Bomber(0,0,"player1",self.grille,1, "right")
+        self.player1.spawn()
+        self.player2 = Bomber(12,12,"player2",self.grille,2, "left")
+        self.player2.spawn()
+
+
     def draw_grille(self):
         for i in range(self.grille.l):
             for j in range(self.grille.h):
@@ -62,13 +73,7 @@ class App:
                             pyxel.text(80,50,alive_player + " wins !",7)
                             pyxel.text(60,70,"Press [ENTER] to restart",7)
                             if pyxel.btnp(pyxel.KEY_RETURN):
-                                self.menu.show = True
-                                self.player1.dead = False
-                                self.player2.dead = False
-                                self.grille.end = False
-                                self.grille.position_init()
-
-
+                                self.reset()
 
                 if case.terrain == PARAMS.PILLIER and not self.grille.end:
                     pyxel.blt(16*i, 16*j, 0, 48,48,  16, 16)
@@ -86,26 +91,43 @@ class App:
 
         self.grille.manage_bombs()
 
-    def calcul_portee(self, core: tuple, portee):
-        x, y = core
-
+    def _calcul_portee(self, core: tuple, portee):
+        xt, yt = core
+        
         def handle_direction(dx, dy):
             for step in range(1, portee + 1):
-                case = self.grille.get_case(x + step * dx, y + step * dy)
-                if case is None: 
+                new_x = xt + step * dx
+                new_y = yt + step * dy
+                case = self.grille.get_case(new_x, new_y)
+                if case is None:
                     break
                 if case.terrain == PARAMS.PILLIER:
                     break
                 case.en_explosion = True
                 if case.terrain == PARAMS.BRIQUE:
+                    self.grille.changing_bricks.append(case)
                     break
-
-        handle_direction(-1, 0)  
-        handle_direction(1, 0)  
-        handle_direction(0, -1) 
-        handle_direction(0, 1)  
-        handle_direction(0, 0)
-
+            return (new_x, new_y) 
+        
+        limits = {"gauche": handle_direction(-1, 0), "droite": handle_direction(1, 0), "haut": handle_direction(0, -1), "bas": handle_direction(0, 1)}
+        return limits
+    
+    def _change_limits(self, direction: str):
+        #Un peu de doc ne fait jamais de mal, surtout pour des fonctions comme celles-ci
+        facteurs_x = ("droite", "gauche")
+        facteurs_y = ("haut", "bas")
+        if direction == facteurs_x[0] and self.limites[direction][0] > self.x:
+            self.cx += 16
+            self.sx -= 16
+            self.x += 1
+        elif direction == facteurs_x[1] and self.limites[direction][0] <= self.x + 5:
+            self.sx -= 16
+        elif direction == facteurs_y[0] and self.limites[direction][1] > self.y:
+            self.cy += 16
+            self.sy -= 16
+            self.y += 1
+        elif direction == facteurs_y[1] and self.limites[direction][1] <= self.y + 5:
+            self.sy -= 16
 
     def draw(self):
         if self.menu.show:
@@ -116,13 +138,43 @@ class App:
                 pyxel.quit()
             else:
                 pyxel.cls(0)
+                for i in range(len(self.grille.explosions_anim)):
+                    if self.grille.counter[i] is None:
+                        self.grille.counter[i] = pyxel.frame_count
+                    else:
+                        pass    
 
-                for bomb in self.grille.explosions_anim:
-                    duree = 12
-                    c_x, c_y = DB.SPRITES["explosions"][(pyxel.frame_count // duree) % 4]
-                    x, y = bomb.x - 2, bomb.y - 2
-                    pyxel.blt(x*16, y*16, 0, c_x, c_y, 80,80)
+                    temps = self.grille.counter[i]
+                    duree_ex = 6
+                    duree_br = 4
+                    coef_ex = (pyxel.frame_count // duree_ex) % 4
+                    coef_br = (pyxel.frame_count // duree_br) % 4
+
+                    #explosions
+                    bomb = self.grille.explosions_anim[i]
+                    self.cx, self.cy = DB.SPRITES["explosions"][coef_ex]
+                    self.sx = 80
+                    self.sy = 80
+                    self.x, self.y = bomb.x - 2, bomb.y - 2
+                    self.limites = self._calcul_portee((bomb.x, bomb.y), 2)
                     
+                    for item in list(self.limites.keys()):
+                        self._change_limits(item)
+
+                    #briques
+                    self.cxb, self.cyb = 80+16*coef_br, 48
+
+                    if temps + 24 > pyxel.frame_count:
+                        pyxel.blt(self.x*16, self.y*16, 0, self.cx, self.cy, self.sx, self.sy)
+                    else:
+                        b = self.grille.explosions_anim.pop(0)
+                        c = self.grille.counter.pop(i)
+
+                        case = self.grille.get_case(bomb.x, bomb.y)
+                        case.bomb = None
+
+                        for elt in self.grille.animations:
+                            elt.terrain = PARAMS.VIDE
 
 
                 self.draw_grille()
