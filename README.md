@@ -1,31 +1,29 @@
 # Bomberman
 
-Bienvenue dans **Bomberman**, une application ou un jeu créé avec [Pyxel](https://github.com/kitao/pyxel), une bibliothèque Python permettant de développer des jeux rétro en 8 bits.
+Welcome to **Bomberman**, a game created with [Pyxel](https://github.com/kitao/pyxel).
 
-## Table des matières
+## Summary
 
-- [Aperçu](#aperçu)
-- [Prérequis](#prérequis)
+- [Preview](#aperçu)
+- [Prerequisites](#prérequis)
 - [Installation](#installation)
-- [Utilisation](#utilisation)
+- [Usage](#utilisation)
 - [Licence](#licence)
 
 ---
 
-## Aperçu
+## Preview
 
 ![Aperçu du projet](assets/screenshot.png)
 
-Bomberman est un petit jeu rétro en tant que projet de NSI.
+Bomberman is a small retro game made with pyxel for NSI.
 
-## Prérequis
+## Prerequisites
 
-Avant de commencer, assurez-vous d'avoir :
-
-- Python 3.8 ou plus
-- Pip (gestionnaire de paquets Python)
-- Une plateforme compatible avec Pyxel (Windows, macOS, ou Linux)
-
+Before starting, you must have :
+ - Python 3
+ - pip installed on your OS
+   
 ## Installation
 
    ```bash
@@ -41,4 +39,4 @@ Avant de commencer, assurez-vous d'avoir :
 
 ## License
 
-Ce projet est sous license MIT. Voir LICENSE pour plus d'infos.
+This project is under MIT LICENSE. Please see LICENSE for more information.
