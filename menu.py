@@ -1,6 +1,7 @@
 import pyxel
 
 class Menu:
+    """Objet désignant l'écran d'accueil"""
     def __init__(self):
         self.show = True
         self.mode = None

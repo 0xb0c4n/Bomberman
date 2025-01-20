@@ -2,6 +2,7 @@ from utils import *
 import pyxel
 
 class PARAMS:
+    """Objet pour stocker des paramètres de bases"""
     LISTE = (0,1,2)
     VIDE = 0
     BRIQUE = 1
@@ -20,7 +21,8 @@ class PARAMS:
     }
 
 class Bomber:
-    def __init__(self, x, y, nom, grille, id, direction):
+    """Objet du personnage jouable"""
+    def __init__(self, x:int, y:int, nom:str, grille: object, id: int, direction: str):
         self.x = x
         self.y = y
         self.move_x = x
@@ -33,10 +35,13 @@ class Bomber:
         self.launched = False
     
     def spawn(self):
+        """Méthode ajoutant un bomberman aux coordonnées renseignés dans le constructeur"""
         case = self.grille.get_case(self.x, self.y)
         case.bomber.append(self)
 
-    def goto(self, direction):
+    def goto(self, direction: str):
+        """Méthode de déplacement du bomberman en place
+        Prend en paramètre une direction de type str"""
         move_cpl = PARAMS.COEFS_GO[direction]
         new_x = self.x+move_cpl[0]
         new_y = self.y+move_cpl[1]
@@ -52,11 +57,13 @@ class Bomber:
             self.y = new_y
 
     def dropBomb(self):
+        """Méthode permettant de lâcher des bombes sur la case où se situe le bomberman"""
         self.grille.cases[self.x][self.y].bomb = Bomb(self.x, self.y, self.id)
         self.launched = True
 
 class Case:
-    def __init__(self, x, y, terrain):
+    """Objet désignant la case"""
+    def __init__(self, x:int, y:int, terrain:int):
         self.x = x
         self.y = y
         self.terrain = terrain
@@ -65,7 +72,8 @@ class Case:
         self.en_explosion = False
 
 class Grille:
-    def __init__(self, l, h):
+    """Objet désignant la grille"""
+    def __init__(self, l:int, h:int):
         self.l = l
         self.h = h
         self.cases = []
@@ -77,6 +85,7 @@ class Grille:
         self.end = False
 
     def position_init(self):
+        """Initialise avec des probas prédéfinies (float) une grille remplie avec des paramètres précis """
         for i in range(self.h):
             ligne = []
             for j in range(self.l):
@@ -92,12 +101,16 @@ class Grille:
 
             self.cases.append(ligne)
 
-    def get_case(self, x, y):
+    def get_case(self, x:int, y:int):
+        """Renvoie un objet Case
+        Prend en paramètre ses coordonnées x et y (integer)"""
         if not(self.l <= x or self.h <= y) and not(x < 0 or y < 0):
             return self.cases[x][y]
     
     def manage_bombs(self):
+        """Méthode permettant de gérer les bombes dans la grille"""
         def decrementer():
+            """Sous-méthode permettant de décrémenter le compte à rebours et de commencer l'explosion à la fin"""
             for i in range(self.l):
                 for j in range(self.h):
                     case = self.get_case(i, j)
@@ -112,7 +125,10 @@ class Grille:
                             case.bomb = None
         
         def exploser():
-            def handle_direction(dx, dy):
+            """Sous-méthode permettant de calculer l'impact de la bombe en fonction de sa portee"""
+            def handle_direction(dx:int, dy:int):
+                """Prend deux entiers relatifs dx et dy compris entre -1 et 1 inclus pour mettre
+                les cases en explosion."""
                 for step in range(1, portee + 1):
                     case = self.get_case(elt.x + step * dx, elt.y + step * dy)
                     if case is None:
@@ -133,6 +149,7 @@ class Grille:
                 handle_direction(0, 0) 
 
         def change_terrain():
+            """Change le type de terrain après le passage de la bombe (sauf pour les briques)"""
             for i in range(self.l):
                 for j in range(self.h):
                     case = self.get_case(i,j)
@@ -152,13 +169,16 @@ class Grille:
         change_terrain()
 
 class Bomb:
-    def __init__(self, x, y, id):
+    """Objet de la Bombe"""
+    def __init__(self, x:int, y:int, id:int):
         self.x = x
         self.y = y
         self.portee = 2
         self.rebours = 5
         self.l_id = id
     
-    def compte_a_rebours(self, n):
+    def compte_a_rebours(self, n:int):
+        """Méthode enlevant n au compte à rebours
+        Prend en paramètre un entier n"""
         self.rebours -= n
         

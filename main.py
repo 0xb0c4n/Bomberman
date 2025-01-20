@@ -22,6 +22,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def deplacement(self):
+        """Méthode permettant la détection des touches du clavier pour le déplacement"""
         for k in pyxel.__dict__.keys():
             if k.startswith('KEY_'):
                 if pyxel.btnp(getattr(pyxel, k)):
@@ -38,6 +39,7 @@ class App:
 
 
     def bombarder(self):
+        """Méthode permettant la détection des touches du claviers pour le bombardement"""
         if pyxel.btnp(pyxel.KEY_E) and not self.player1.launched:
             self.player1.dropBomb()
         elif pyxel.btnp(pyxel.KEY_J) and not self.player2.launched:
@@ -45,6 +47,7 @@ class App:
 
 
     def reset(self):
+        """Méthode permettant de redémarrer une nouvelle partie lorsque la précédente est terminée"""
         self.menu.show = True
         self.grille = Grille(13,13)
         self.grille.position_init()
@@ -56,6 +59,7 @@ class App:
 
 
     def draw_grille(self):
+        """Méthode permettant de dessiner la grille"""
         for i in range(self.grille.l):
             for j in range(self.grille.h):
                 case = self.grille.get_case(i, j)
@@ -91,7 +95,9 @@ class App:
 
         self.grille.manage_bombs()
 
-    def _calcul_portee(self, core: tuple, portee):
+    def _calcul_portee(self, core: tuple, portee:int) -> dict:
+        """Méthode renvoyant un dictionnaire limites correspondant aux coordonnées des limites de l'explosion dans chaque direction
+        Prend en paramètre les x et y (sous forme de tuples) et la portee (int)"""
         xt, yt = core
         
         def handle_direction(dx, dy):
@@ -112,6 +118,8 @@ class App:
         return limits
     
     def _change_limits(self, direction: str):
+        """Méthode permettant de réduire l'image de l'explosion en fonction des limites
+        Prend en paramètre une chaîne de caractères direction."""
         facteurs_x = ("gauche", "droite")
         facteurs_y = ("haut", "bas")
         if direction == facteurs_x[0] and self.limites[direction][0] > self.x:

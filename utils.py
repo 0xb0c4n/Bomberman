@@ -33,7 +33,7 @@ def est_pair(i: int) -> bool:
     Prend en paramètre en entier i"""
     return i % 2 == 0
 
-def probas(liste: dict):
+def probas(liste: dict) -> int:
     """Renvoie un évènement aléatoire à partir d'un dictionnaire d'évènements
     Prend en paramètre un dictionnaire d'évènements avec leurs probabilités (float)"""
     prob = random.random()
