@@ -27,8 +27,8 @@ Before starting, you must have :
 ## Installation
 
    ```bash
-   git clone https://github.com/votre_nom/projet-pyxel.git
-   cd projet-pyxel
+   git clone https://github.com/0xb0c4n/Bomberman.git
+   cd Bomberman
    ```
 
 ## Utilisation
