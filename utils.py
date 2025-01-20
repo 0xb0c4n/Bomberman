@@ -26,7 +26,6 @@ class DB:
         }
     }
 
-
 #Utils
 
 def est_pair(i: int) -> bool:

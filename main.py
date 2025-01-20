@@ -38,9 +38,9 @@ class App:
 
 
     def bombarder(self):
-        if pyxel.btnp(pyxel.KEY_E):
+        if pyxel.btnp(pyxel.KEY_E) and not self.player1.launched:
             self.player1.dropBomb()
-        elif pyxel.btnp(pyxel.KEY_J):
+        elif pyxel.btnp(pyxel.KEY_J) and not self.player2.launched:
             self.player2.dropBomb()
 
 
@@ -113,23 +113,26 @@ class App:
         return limits
     
     def _change_limits(self, direction: str):
-        #Un peu de doc ne fait jamais de mal, surtout pour des fonctions comme celles-ci
         facteurs_x = ("gauche", "droite")
         facteurs_y = ("haut", "bas")
         if direction == facteurs_x[0] and self.limites[direction][0] > self.x:
             self.cx += 16
             self.sx -= 16
             self.x += 1
-        elif direction == facteurs_x[1] and self.limites[direction][0] != self.grille.l - 1 and self.limites[direction][0] <= self.x + 5:
-            self.sx -= 16 
+        elif direction == facteurs_x[1] and self.limites[direction][0] <= self.x + 5:
+            xc,yc = self.limites[direction]
+            case = self.grille.get_case(xc,yc)
+            if case is not None and not case.terrain == PARAMS.VIDE:
+                self.sx -= 16
         elif direction == facteurs_y[0] and self.limites[direction][1] > self.y:
             self.cy += 16
             self.sy -= 16
             self.y += 1
-        elif direction == facteurs_y[1] and self.limites[direction][0] != self.grille.h - 1 and self.limites[direction][1] <= self.y + 5:
-            print(self.limites[direction][0] )
-            print(self.x + 5)
-            self.sy -= 16
+        elif direction == facteurs_y[1] and self.limites[direction][1] <= self.y + 5:
+            xc,yc = self.limites[direction]
+            case = self.grille.get_case(xc,yc)
+            if case is not None and not case.terrain == PARAMS.VIDE:
+                self.sy -= 16
 
     def draw(self):
         if self.menu.show:
@@ -140,6 +143,7 @@ class App:
                 pyxel.quit()
             else:
                 pyxel.cls(0)
+                print(len(self.grille.explosions_anim))
                 for i in range(len(self.grille.explosions_anim)):
                     if self.grille.counter[i] is None:
                         self.grille.counter[i] = pyxel.frame_count
@@ -169,14 +173,18 @@ class App:
                     if temps + 24 > pyxel.frame_count:
                         pyxel.blt(self.x*16, self.y*16, 0, self.cx, self.cy, self.sx, self.sy)
                     else:
-                        b = self.grille.explosions_anim.pop(0)
-                        c = self.grille.counter.pop(i)
+                        self.grille.explosions_anim.pop(0)
+                        self.grille.counter[i] = None
 
                         case = self.grille.get_case(bomb.x, bomb.y)
+                        l_id = self.player1 if bomb.l_id == 1 else self.player2
+                        l_id.launched = False
+
                         case.bomb = None
 
                         for elt in self.grille.animations:
                             elt.terrain = PARAMS.VIDE
+                        
 
 
                 self.draw_grille()

@@ -30,6 +30,7 @@ class Bomber:
         self.grille = grille
         self.id = id
         self.direction = direction
+        self.launched = False
     
     def spawn(self):
         case = self.grille.get_case(self.x, self.y)
@@ -51,7 +52,8 @@ class Bomber:
             self.y = new_y
 
     def dropBomb(self):
-        self.grille.cases[self.x][self.y].bomb = Bomb(self.x, self.y)
+        self.grille.cases[self.x][self.y].bomb = Bomb(self.x, self.y, self.id)
+        self.launched = True
 
 class Case:
     def __init__(self, x, y, terrain):
@@ -70,9 +72,8 @@ class Grille:
         self.exploding_bombs = []
         self.animations = []
         self.explosions_anim = []
-        self.counter = []
         self.changing_bricks = []
-        
+        self.counter = [None] * 2
         self.end = False
 
     def position_init(self):
@@ -151,11 +152,12 @@ class Grille:
         change_terrain()
 
 class Bomb:
-    def __init__(self, x, y):
+    def __init__(self, x, y, id):
         self.x = x
         self.y = y
         self.portee = 2
         self.rebours = 5
+        self.l_id = id
     
     def compte_a_rebours(self, n):
         self.rebours -= n
