@@ -144,11 +144,9 @@ class App:
             else:
                 pyxel.cls(0)
                 print(len(self.grille.explosions_anim))
-                for i in range(len(self.grille.explosions_anim)):
+                for i in range(len(self.grille.explosions_anim) - 1, -1, -1):  
                     if self.grille.counter[i] is None:
                         self.grille.counter[i] = pyxel.frame_count
-                    else:
-                        pass    
 
                     temps = self.grille.counter[i]
                     duree_ex = 6
@@ -156,25 +154,25 @@ class App:
                     coef_ex = (pyxel.frame_count // duree_ex) % 4
                     coef_br = (pyxel.frame_count // duree_br) % 4
 
-                    #explosions
+                    # explosions
                     bomb = self.grille.explosions_anim[i]
                     self.cx, self.cy = DB.SPRITES["explosions"][coef_ex]
                     self.sx = 80
                     self.sy = 80
                     self.x, self.y = bomb.x - 2, bomb.y - 2
                     self.limites = self._calcul_portee((bomb.x, bomb.y), 2)
-                    
+
                     for item in list(self.limites.keys()):
                         self._change_limits(item)
 
-                    #briques
-                    self.cxb, self.cyb = 80+16*coef_br, 48
+                    # briques
+                    self.cxb, self.cyb = 80 + 16 * coef_br, 48
 
                     if temps + 24 > pyxel.frame_count:
-                        pyxel.blt(self.x*16, self.y*16, 0, self.cx, self.cy, self.sx, self.sy)
+                        pyxel.blt(self.x * 16, self.y * 16, 0, self.cx, self.cy, self.sx, self.sy)
                     else:
-                        self.grille.explosions_anim.pop(0)
-                        self.grille.counter[i] = None
+                        self.grille.explosions_anim.pop(i)
+                        self.grille.counter.pop(i)
 
                         case = self.grille.get_case(bomb.x, bomb.y)
                         l_id = self.player1 if bomb.l_id == 1 else self.player2
@@ -184,8 +182,6 @@ class App:
 
                         for elt in self.grille.animations:
                             elt.terrain = PARAMS.VIDE
-                        
-
 
                 self.draw_grille()
 
