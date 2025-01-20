@@ -77,7 +77,7 @@ class App:
 
                 if case.terrain == PARAMS.PILLIER and not self.grille.end:
                     pyxel.blt(16*i, 16*j, 0, 48,48,  16, 16)
-                elif case.terrain == PARAMS.BRIQUE and not self.grille.end:
+                elif case.terrain == PARAMS.BRIQUE and not self.grille.end and not case.en_explosion:
                     pyxel.blt(16*i, 16*j, 0, 64, 48, 16, 16)
                 
 
@@ -105,7 +105,6 @@ class App:
                     break
                 case.en_explosion = True
                 if case.terrain == PARAMS.BRIQUE:
-                    self.grille.changing_bricks.append(case)
                     break
             return (new_x, new_y) 
         
@@ -143,16 +142,17 @@ class App:
                 pyxel.quit()
             else:
                 pyxel.cls(0)
-                print(len(self.grille.explosions_anim))
                 for i in range(len(self.grille.explosions_anim) - 1, -1, -1):  
                     if self.grille.counter[i] is None:
                         self.grille.counter[i] = pyxel.frame_count
+
+                    
 
                     temps = self.grille.counter[i]
                     duree_ex = 6
                     duree_br = 4
                     coef_ex = (pyxel.frame_count // duree_ex) % 4
-                    coef_br = (pyxel.frame_count // duree_br) % 4
+                    coef_br = (pyxel.frame_count // duree_br) % 6
 
                     # explosions
                     bomb = self.grille.explosions_anim[i]
@@ -168,8 +168,15 @@ class App:
                     # briques
                     self.cxb, self.cyb = 80 + 16 * coef_br, 48
 
+
                     if temps + 24 > pyxel.frame_count:
-                        pyxel.blt(self.x * 16, self.y * 16, 0, self.cx, self.cy, self.sx, self.sy)
+                        pyxel.blt(self.x * 16, self.y * 16, 0, self.cx, self.cy, self.sx, self.sy)            
+                        for elt in self.grille.animations:
+                            if elt.x == bomb.x and elt.y == bomb.y:
+                                pass
+                            else:
+                                self.xb, self.yb = elt.x, elt.y
+                                pyxel.blt(16*self.xb, 16*self.yb, 0, self.cxb, self.cyb, 16, 16)
                     else:
                         self.grille.explosions_anim.pop(i)
                         self.grille.counter.pop(i)
@@ -180,8 +187,9 @@ class App:
 
                         case.bomb = None
 
-                        for elt in self.grille.animations:
-                            elt.terrain = PARAMS.VIDE
+                        for i in range(len(self.grille.animations)- 1, -1, -1):
+                            self.grille.animations[i].terrain = PARAMS.VIDE
+                            self.grille.animations.pop(i)
 
                 self.draw_grille()
 
