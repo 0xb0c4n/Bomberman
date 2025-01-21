@@ -81,7 +81,7 @@ class Grille:
         self.animations = []
         self.explosions_anim = []
         self.changing_bricks = []
-        self.counter = [None] * 2
+        self.counter = []
         self.end = False
 
     def position_init(self):
